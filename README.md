@@ -68,7 +68,7 @@ After this step login to mysql and access the data. The data isstored in a 'drug
 4) Expose Endpoint to access the data 
 TODO
 
-# Improvement 
+# Improvements 
 1) I spent some time in wikimedia REST api (api.sh) for parsing drug tables. But couldn't make it work to extract wiki data tables easily. If get some time i can check if i can make it work. Decided to write my own parser in scrapy.
 2) Definitely a lot of normalization is possible to improve the quality of data. After which it would be easy to query the dataset. 
 
