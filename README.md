@@ -1,46 +1,75 @@
-Componenets used : 
-A) Scrpay for crawling data 
-B) mysql for storing data 
-C) flask to access data 
+# Drug Data Crawler project
+This is a python based project intended to crawl drug data from wiki pages, process the data, stores it into a datastore. Finally there is web framework to make the data available through endpoints
+## Componenets used 
+A) 'Scrpay' for crawling data 
+B) 'mysql' for storing data 
+C) 'flask' to access data 
 
-Scrapy installation :- 
+## Installation
 
+### scrapy
 ```bash
 pip3 install Scrapy 
 ```
 In case you get blocked during installation, more details about instllation is here 
 https://doc.scrapy.org/en/latest/intro/install.html
 
-mysql installation :-
+### mysql
 ```bash
 pip3 install mysqlclient
 ```
-flask installation :- 
+### flask
+TODO
 
-drug_data_crawler installation :- 
+## Code Deployment 
 
-Clone the git repository 
-https://github.com/subhenduA/drug_data_crawler.git
-This is a public repo should be easily accessible.
-
-Create an export variable called $CRAWLER_HOME pointing to the repo directory. e.g.,
+1) Clone the git repository 
+https://github.com/subhenduA/drug_data_crawler
+2) Create an export variable called $CRAWLER_HOME pointing to the repo directory. e.g.,
 ```bash
+$ git clone git@github.com:subhenduA/drug_data_crawler.git
 $ export CRAWLER_HOME=/Users/saich/drug_data_crawler
 ```
+3) Assuming mysql is installed properly 
+```bash
+$ mysql < $CRAWLER_HOME/db/schema.sql
+```
+## Get started
 
-Running drug_data_crawler code :
+1) Create parallel crawl job
+Since scrapy is not inherently multi-threaded, my approach is to distribute the work into multiple scrapy spider processes. I have considered creating 3 different scrapy job processes to crawl and process the data. This is the init crawler 'create_wiki_drug_info_job'. It crawls the index page (https://en.wikipedia.org/wiki/Category:Drugs_by_target_organ_system) and divdes the 14 subcategories into 3 different job files. The job files would be used by the actual data crawler in next step. Run the following commands
 
-1) Parallelize the crawling work
-Since scrapy is not inhereently multi-threaded, the current approach is to distribute the work into multiple scrapy spider processes. I have considered creating 3 different scrapy job processes to crawl and process the data. This is the init crawler 'create_wiki_drug_info_job'. It crawls the index page (https://en.wikipedia.org/wiki/Category:Drugs_by_target_organ_system) and divdes the 14 subcategories into 3 different job files.
 ```bash
 $ cd $CRAWLER_HOME
-scrapy crawl create_wiki_drug_info_job -a jobfilepath=$CRAWLER_HOME/jobs -a output=$CRAWLER_HOME/output
+$ mkdir jobs
+$ mkdir output
+$ scrapy crawl create_wiki_drug_info_job -a jobfilepath=$CRAWLER_HOME/jobs -a output=$CRAWLER_HOME/output
 ```
 The above run should create 3 different job files in jobs directory. Open the individual job files and verify the subcategories.
-2) 
-scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job1 -a filepath=$CRAWLER_HOME/output
-scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job2 -a filepath=$CRAWLER_HOME/output
-scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job3 -a filepath=$CRAWLER_HOME/output
+2) Run the following 3 crawler jobs as background processes (using nohup or screen utility) 
+```bash
+$ cd  $CRAWLER_HOME/wiki_crawler_project
+$ scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job1 -a filepath=$CRAWLER_HOME/output
+$ scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job2 -a filepath=$CRAWLER_HOME/output
+$ scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job3 -a filepath=$CRAWLER_HOME/output
 ```
-Considered wikimedia api for parsing drug tables. But couldn't get easy parser to parse the wiki datatables. Decided to write my own parser in scrapy.
+Alternatively, if you just want to test the code run one of the above jobs. Wait for  2-3 mins. and then kill the process. 
+
+When the above job gets finished (or executed for few minutes), the source files and drug data json files will start getting stored in '$CRAWLER_HOME\output' directory. Peek inside the output dir and validate the file structure. The 'leaf' directories contain the drug files and a json file file containing the wiki table data. Open the json and verify it. 
+
+3) Data normalization & data loading 
+In this step the data gets standardized before it gets loaded into database. This is where a lot of normalization can be done to improve the quality of data. I just went through the basic steps so that data can get loaded into mysql. 
+```bash
+$ cd  $CRAWLER_HOME/wiki_crawler_project
+$ python3 ./wiki_crawler_project/spiders/drug_data_normalizer.py
+```
+After this step login to mysql and access the data. The data isstored in a 'drug_details' table in 'wiki_drug_db' schema.
+
+4) Expose Endpoint to access the data 
+TODO
+
+# Improvement 
+A) I spent some time in wikimedia REST api (api.sh) for parsing drug tables. But couldn't make it work to extract wiki data tables easily. If get some time i can check if i can make it work. Decided to write my own parser in scrapy.
+B) Definitely a lot of normalization is possible to improve the quality of data. After which it would be easy to query the dataset. 
+
 

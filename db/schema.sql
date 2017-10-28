@@ -1,4 +1,6 @@
-CREATE TABLE drug_details (
+DROP DATABASE IF EXISTS wiki_drug_db;
+CREATE DATABASE wiki_drug_db;
+CREATE TABLE wiki_drug_db.drug_details (
 wiki_name varchar(200),
 type text,
 source text,

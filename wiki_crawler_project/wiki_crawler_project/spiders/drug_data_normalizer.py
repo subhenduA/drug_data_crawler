@@ -32,7 +32,7 @@ class Normalizer:
 				column_value_list.append(self.normalize_value(json_data[key]))
 		insert_query = "INSERT INTO drug_details (%s) VALUES (%s);" %(','.join(column_name_list), ','.join(column_value_list))
 		print("%s" %insert_query)
-		conn = MySQLdb.connect(host= "localhost", db="test")
+		conn = MySQLdb.connect(host= "localhost", db="wiki_drug_db")
 		conn.cursor().execute(insert_query)
 		conn.commit()
 
