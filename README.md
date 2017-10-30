@@ -35,7 +35,7 @@ TODO
 https://github.com/subhenduA/drug_data_crawler
 2) Create an export variable called $CRAWLER_HOME pointing to the repo directory. e.g.,
 ```bash
-$ git clone git@github.com:subhenduA/drug_data_crawler.git
+$ git clone https://github.com/subhenduA/drug_data_crawler.git
 $ export CRAWLER_HOME=/Users/saich/drug_data_crawler
 ```
 3) Assuming mysql is installed properly 
