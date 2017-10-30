@@ -13,8 +13,16 @@ pip3 install Scrapy
 ```
 In case you get blocked during installation, more details about instllation is here 
 https://doc.scrapy.org/en/latest/intro/install.html
-
+FYI in a brand new environment you may need to get the following components installed
+```bash
+sudo apt-get install libxml2-dev libxslt1-dev
+sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev python3-pip
+sudo apt-get install python3-pip
+sudo pip3 install --upgrade setuptools
+sudo pip3 install twisted
+```
 ### mysql
+Download mysql from here https://dev.mysql.com/doc/refman/5.7/en/osx-installation-pkg.html
 ```bash
 pip3 install mysqlclient
 ```
