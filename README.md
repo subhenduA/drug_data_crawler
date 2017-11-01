@@ -13,13 +13,18 @@ pip3 install Scrapy
 ```
 In case you get blocked during installation, more details about instllation is here 
 https://doc.scrapy.org/en/latest/intro/install.html
-FYI in a brand new environment you may need to get the following components installed
+FYI in a brand new environment you may need to get the following components installed. I tried to run this code in an ubuntu compute instance in google cloud. I had to install the following packages for the full setup
 ```bash
 sudo apt-get install libxml2-dev libxslt1-dev
 sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev python3-pip
 sudo apt-get install python3-pip
 sudo pip3 install --upgrade setuptools
 sudo pip3 install twisted
+sudo apt-get install build-essential libssl-dev libffi-dev python3-dev
+sudo pip3 install pyopenssl
+sudo pip3 install cryptography
+sudo pip3 install ctutlz
+sudo pip3 install queuelib
 ```
 ### mysql
 Download mysql from here https://dev.mysql.com/doc/refman/5.7/en/osx-installation-pkg.html
