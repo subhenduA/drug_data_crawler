@@ -81,7 +81,6 @@ class DrugdataSpider(scrapy.Spider):
                 value = self.parse_value(row)
                 if key != '':
                     data_dict[key] = value
-                    value_array.append(value)
             # stores the data as json inside the directory
             drug_jsonfile = '%s/%s.json' % (dicrectory_path, page)
             with open(drug_jsonfile, 'w') as outfile:  
