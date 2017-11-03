@@ -46,6 +46,7 @@ class DrugdataSpider(scrapy.Spider):
                     category_url = link.css("div a::attr(href)").extract_first()
                     print ("Crawling: %s" %(category_url))
                     next_page = response.urljoin(category_url)
+                    # TODO : filter non valid categories  Category:Psychoactive drugs
                     next_directory_path = ''.join([dicrectory_path, '/', category_url.split("/")[-1]])
                     os.makedirs(next_directory_path, exist_ok=True)
                     request = scrapy.Request(next_page, callback=self.parse)

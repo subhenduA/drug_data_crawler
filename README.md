@@ -2,8 +2,9 @@
 This is a python based project intended to crawl drug data from wiki pages, process the data, stores it into a datastore. Finally there is web framework to make the data available through endpoints
 ## Componenets used 
 A) 'Scrpay' for crawling data 
-B) 'mysql' for storing data 
-C) 'flask' to access data 
+B) 'pandas' for wrangling data 
+C) 'flask' for accessing data
+D) 'mysql' for storing data (optional) 
 
 ## Installation
 
@@ -26,23 +27,27 @@ sudo pip3 install cryptography
 sudo pip3 install ctutlz
 sudo pip3 install queuelib
 ```
+### pandas
+pip3 install pandas
+### flask
+sudo pip3 install Flask
+
 ### mysql
 Download mysql from here https://dev.mysql.com/doc/refman/5.7/en/osx-installation-pkg.html
 ```bash
 pip3 install mysqlclient
 ```
-### flask
-TODO
 
 ## Code Deployment 
 
 1) Clone the git repository 
 https://github.com/subhenduA/drug_data_crawler
-2) Create an export variable called $CRAWLER_HOME pointing to the repo directory. e.g.,
+2) Create 2 export variables called CRAWLER_HOME & FLASK_APP with respect to the repo. location
 ```bash
 $ git clone https://github.com/subhenduA/drug_data_crawler.git
 $ export CRAWLER_HOME=/Users/saich/drug_data_crawler
-```
+$ export FLASK_APP=$CRAWLER_HOME/web/drug_api.py
+``` 
 3) Assuming mysql is installed properly 
 ```bash
 $ mysql < $CRAWLER_HOME/db/schema.sql
