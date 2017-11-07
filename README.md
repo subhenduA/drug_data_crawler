@@ -71,21 +71,42 @@ $ scrapy crawl drugdata  -a jobfilepath=$CRAWLER_HOME/jobs/job3 -a filepath=$CRA
 ```
 Alternatively, if you just want to test the code run one of the above jobs. Wait for  2-3 mins. and then kill the process. 
 
-When the above job gets finished (or executed for few minutes), the source files and drug data json files will start getting stored in '$CRAWLER_HOME\output' directory. Peek inside the output dir and validate the file structure. The 'leaf' directories contain the drug files and a json file file containing the wiki table data. Open the json and verify it. 
+When the above job gets finished (or executed for few minutes), the source files and drug data json files will start getting stored in '$CRAWLER_HOME\output' directory. Peek inside the output dir and validate the file structure. The 'leaf' directories contain the drug files and a json file containing the wiki table data. Open the json and verify it. 
 
 3) Data normalization  
-In this step the data gets standardized before it gets loaded into database. This is where a lot of normalization can be done to improve the quality of data. I just went through the basic steps so that data can get loaded into mysql. 
+In this step raw drug data stored in json files gets normalized and gets saved in a separate normalized file. This is where a lot of standardization can be done to improve the quality of data. Ideally each of the fields in wiki table should pass through normalize function so that data can be cleaned up for further analytics downstream. I did some basic preprocessing with 'biological_half_life' , extracted min & max out of the 'biological_half_life' field. Run the following command to execute the normalizer.
 ```bash
 $ cd  $CRAWLER_HOME/wiki_crawler_project
-$ python3 ./wiki_crawler_project/spiders/drug_data_normalizer.py
+$ python3 ./wiki_crawler_project/normalizer/drug_data_df_normalizer.py
 ```
-After this step login to mysql and access the data. The data isstored in a 'drug_details' table in 'wiki_drug_db' schema.
+The output of the above command is a normalized drug file stored in $CRAWLER_HOME/output directory. THe name of the file is 'drug_data_normalized.json'. This file structure is like the following 
+```
+{"Acetazolamide": {"type": "", "target": "", "source": "", "pronunciation": "", "trade_names": "Diamox, Diacarb, others", "ahfs_drugs_com": "", "license_data": "", "pregnancy__category": "", "routes_of__administration": "", "atc_code": "S01EC01,WHO", "legal_status": "S4,\u211e-only,POM,\u211e-only", "bioavailability": "", "biological_half_life": "2\u20134 hours,[1]", "cas_number": "216665-38-2", "drugbank": "DB00819", "chemspider": "1909", "unii": "SW1TF3RGAH", "kegg": "D00218", "chembl": "CHEMBL20", "formula": "", "molar_mass": "222.245 g/mol", "biological_half_life_min": "2", "biological_half_life_max": "4"}, 
+"Bendroflumethiazide": {"type": "", "target": "", "source": "", "pronunciation": "", "trade_names": "", "ahfs_drugs_com": "", "license_data": "", "pregnancy__category": "", "routes_of__administration": "", "atc_code": "C03AA01,WHO", "legal_status": "POM", "bioavailability": "100%", "biological_half_life": "3-4 hours,[2]", "cas_number": "73-48-3", "drugbank": "DB00436", "chemspider": "2225", "unii": "5Q52X6ICJI", "kegg": "D00650", "chembl": "CHEMBL1684", "formula": "", "molar_mass": "421.415 g/mol", "biological_half_life_min": "3", "biological_half_life_max": "4"},
+...
+}
+```
+the key is the wiki_drug_name and value is the json containing normalized values. Notice the normalized fields 'biological_half_life_min' & 'biological_half_life_max' in the sample data. This data would be exposed through flask endpoint in next step. 
 
 4) Expose Endpoint to access the data 
-TODO
+In this stage, normalized data would be made available through flask endpoints. Run flask app using the following command 
+```bash
+$ cd $CRAWLER_HOME/web
+$ flask run 
+```
+Use nohup if you want to keep flask running. There are 2 different endpoints :- 
+A) Access raw drug data : http://<host_name>:5000/drug_info/<drug_name>
+It returns you the raw content of the drug data. Sample useage 
+```bash
+$ curl 'http://127.0.0.1:5000/drug_info/Pedunculagin'
+```
+B) Access normalized drug data : 
+TODO :
 
 # Improvements 
 1) I spent some time in wikimedia REST api (api.sh) for parsing drug tables. But couldn't make it work to extract wiki data tables easily. If get some time i can check if i can make it work. Decided to write my own parser in scrapy.
-2) Definitely a lot of normalization is possible to improve the quality of data. After which it would be easy to query the dataset. 
+2) Definitely a lot of normalization is possible to improve the quality of data. I just coded the basic framework which uses pandas dataframe parallel processing package to wrangle the data. Ideally we need to write normalizer for each field. 
+3) File path is hard coded in few places. Need to pass it through parameter or make it set environment variables.
+4) Some of the processing parameters are hard coded , e.g., num_cores, num_partitions in data wrangling. The code should read these variables through a congiguration framework. 
 
 
