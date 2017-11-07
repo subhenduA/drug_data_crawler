@@ -75,7 +75,7 @@ class DrugdataSpider(scrapy.Spider):
             there are rows inside id <tr> 
             Each row has <th> for key name and <td> for key vlaue 
             '''
-            data_dict = {'source_url' : response.url}
+            data_dict = {'source_url' : response.url, 'wiki_drug_name' : page}
             rows = response.css('table.infobox tr')
             for row in rows:
                 key = self.parse_key(row)
