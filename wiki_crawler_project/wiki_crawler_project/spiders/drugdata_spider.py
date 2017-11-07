@@ -75,7 +75,7 @@ class DrugdataSpider(scrapy.Spider):
             there are rows inside id <tr> 
             Each row has <th> for key name and <td> for key vlaue 
             '''
-            data_dict = {}
+            data_dict = {'source_url' : response.url}
             rows = response.css('table.infobox tr')
             for row in rows:
                 key = self.parse_key(row)
@@ -86,6 +86,11 @@ class DrugdataSpider(scrapy.Spider):
             drug_jsonfile = '%s/%s.json' % (dicrectory_path, page)
             with open(drug_jsonfile, 'w') as outfile:  
                 json.dump(data_dict, outfile)
+            # also stroes the file path in a key index file
+            indexfile_path =  '%s/drug_index.csv' % self.filepath
+            with open(indexfile_path, 'a') as indexfile:
+                line = '|'.join([page, drug_jsonfile])
+                indexfile.write("%s\n" % line)
 
     
     def parse_key(self, row):
