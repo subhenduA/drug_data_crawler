@@ -28,14 +28,14 @@ sudo pip3 install ctutlz
 sudo pip3 install queuelib
 ```
 ### pandas
-pip3 install pandas
+sudo pip3 install pandas
 ### flask
 sudo pip3 install Flask
 
-### mysql
+### mysql (optional)
 Download mysql from here https://dev.mysql.com/doc/refman/5.7/en/osx-installation-pkg.html
 ```bash
-pip3 install mysqlclient
+sudo pip3 install mysqlclient
 ```
 
 ## Code Deployment 
@@ -48,10 +48,7 @@ $ git clone https://github.com/subhenduA/drug_data_crawler.git
 $ export CRAWLER_HOME=/Users/saich/drug_data_crawler
 $ export FLASK_APP=$CRAWLER_HOME/web/drug_api.py
 ``` 
-3) Assuming mysql is installed properly 
-```bash
-$ mysql < $CRAWLER_HOME/db/schema.sql
-```
+
 ## Get started
 
 1) Create parallel crawl job
@@ -64,6 +61,7 @@ $ mkdir output
 $ scrapy crawl create_wiki_drug_info_job -a jobfilepath=$CRAWLER_HOME/jobs -a output=$CRAWLER_HOME/output
 ```
 The above run should create 3 different job files in jobs directory. Open the individual job files and verify the subcategories.
+
 2) Run the following 3 crawler jobs as background processes (using nohup or screen utility) 
 ```bash
 $ cd  $CRAWLER_HOME/wiki_crawler_project
@@ -75,7 +73,7 @@ Alternatively, if you just want to test the code run one of the above jobs. Wait
 
 When the above job gets finished (or executed for few minutes), the source files and drug data json files will start getting stored in '$CRAWLER_HOME\output' directory. Peek inside the output dir and validate the file structure. The 'leaf' directories contain the drug files and a json file file containing the wiki table data. Open the json and verify it. 
 
-3) Data normalization & data loading 
+3) Data normalization  
 In this step the data gets standardized before it gets loaded into database. This is where a lot of normalization can be done to improve the quality of data. I just went through the basic steps so that data can get loaded into mysql. 
 ```bash
 $ cd  $CRAWLER_HOME/wiki_crawler_project
