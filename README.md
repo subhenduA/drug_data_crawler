@@ -88,7 +88,8 @@ The output of the above command is a normalized drug file stored in $CRAWLER_HOM
 ```
 the key is the wiki_drug_name and value is the json containing normalized values. Notice the normalized fields 'biological_half_life_min' & 'biological_half_life_max' in the sample data. This data would be exposed through flask endpoint in next step. 
 
-4) Expose Endpoint to access the data
+4) Expose Falsk Endpoint 
+
 In this stage, normalized data would be made available through flask endpoints. Run flask app using the following command 
 
 ```bash
@@ -98,8 +99,9 @@ $ flask run
 
 Use nohup if you want to keep flask running. There are 2 different endpoints :- 
 
-A) Access raw drug data : http://<host_name>:5000/drug_info/<drug_name>
-It returns you the raw content of the drug data. Sample useage 
+A) Access raw drug data : 
+http://<host_name>:5000/drug_info/<drug_name>
+It returns you the raw content of the drug data. Sample usage 
 ```bash
 $ curl 'http://127.0.0.1:5000/drug_info/Pedunculagin'
 ```
