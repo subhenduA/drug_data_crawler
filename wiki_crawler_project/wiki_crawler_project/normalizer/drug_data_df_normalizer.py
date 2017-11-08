@@ -34,10 +34,12 @@ class ParallelNormalizer:
 
 	def load_raw_json(self, json_filepath):
 		json_file = open(json_filepath)
+		#TODO : need to improve to distinguish between 'Zonisamide' & 'Bupropion/zonisamide'
 		wiki_name = json_filepath.split("/")[-1].replace(".json", "")
 		json_data = json.load(json_file)
 		# this is the normalized dict structure 
-		normalized_dict = {'wiki_drug_name': wiki_name, 'type' : '', 'target' : '','source' : '','pronunciation' : '','trade_names' : '','ahfs_drugs_com' : '','license_data' : '','pregnancy__category' : '','routes_of__administration' : '','atc_code' : '','legal_status' : '','bioavailability' : '','biological_half_life' : '','cas_number' : '','drugbank' : '','chemspider' : '','unii' : '','kegg' : '','chembl' : '','formula' : '','molar_mass' : ''}
+		#print("wiki_name : %s" %wiki_name.lower())
+		normalized_dict = { 'wiki_drug_name' : wiki_name.lower(), 'type' : '', 'target' : '','source' : '','pronunciation' : '','trade_names' : '','ahfs_drugs_com' : '','license_data' : '','pregnancy__category' : '','routes_of__administration' : '','atc_code' : '','legal_status' : '','bioavailability' : '','biological_half_life' : '','cas_number' : '','drugbank' : '','chemspider' : '','unii' : '','kegg' : '','chembl' : '','formula' : '','molar_mass' : ''}
 		# standardizes the key name to map it to normalized dict structure 
 		for key in json_data.keys():
 			column_name = key.replace(" ", "_").replace('\n', '_').replace('/', '_').replace('.', '_').replace('-', '_').lower()
@@ -45,9 +47,11 @@ class ParallelNormalizer:
 				normalized_dict[column_name] = json_data[key]
 
 		# appends data to single data frame , only data tables not much dats fits into memroy 
+		#print("wiki_name : %s" %normalized_dict['wiki_drug_name'])
 		self.global_df = self.global_df.append(normalized_dict, ignore_index=True)
+		#print("wiki_name : %s" %self.global_df['wiki_drug_name'][0])
 	
-	def normalize_and_save(self):
+	def normalize_and_save(self, dir_path):
 		# this piece of code to be executed without multiprocessing 
 		'''
 		self.global_df['biological_half_life_min'] = self.global_df['biological_half_life'].map(lambda x : self.biological_half_life_min(x))
@@ -63,11 +67,11 @@ class ParallelNormalizer:
 		pool.join()
 		
 		# TODO : calculate few stats now and save it somewhere
+		# saves the dataframe as json so that flask server can use it for query
 
-		# saves the dataframe as json so that flask server can use it for query 
 		self.global_df.set_index(['wiki_drug_name'], inplace=True)
 		json_data = json.loads(self.global_df.to_json(orient='index'))
-		normalized_drug_file_path = '%s/drug_data_normalized.json' % self.dir_path
+		normalized_drug_file_path = '%s/drug_data_normalized.json' % dir_path
 		with open(normalized_drug_file_path, 'w') as f:
 			json.dump(json_data, f)
 
@@ -82,6 +86,6 @@ class ParallelNormalizer:
 
 if __name__ == '__main__':
 	# TODO remove the hard coding on filepath 
-	nm = ParallelNormalizer("/Users/saich/Documents/Personal/MyRepo/drug_data_crawler/output")
-	nm.search_process_drug_json_files(nm.dir_path)
-	nm.normalize_and_save()
+	nm = ParallelNormalizer("/Users/saich/Documents/Personal/MyRepo/drug_data_crawler")
+	nm.search_process_drug_json_files('/'.join([nm.dir_path, 'output']))
+	nm.normalize_and_save('/'.join([nm.dir_path, 'web']))
